@@ -1,0 +1,1 @@
+import React, { PureComponent } from 'react'import { WebView } from 'react-native'export default class BannerDetail extends PureComponent {  render () {    const { state } = this.props.navigation    return (      <WebView style={{flex: 1}} source={{uri: state.params.uri}} />    )  }}

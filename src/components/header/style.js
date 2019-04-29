@@ -1,0 +1,1 @@
+import styled from 'styled-components'import { utilWidth } from '../../common/js/util'export const HeaderWrapper = styled.View`  height: ${utilWidth(88)};  flex-direction: row;  align-items: center;  justify-content: center;`export const HeaderContent = styled.Text`  font-size: ${utilWidth(36)};  color: #ffcd32;`

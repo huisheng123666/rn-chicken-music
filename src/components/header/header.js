@@ -1,0 +1,1 @@
+import React from 'react'import { HeaderWrapper, HeaderContent } from "./style";export default () => {  return (    <HeaderWrapper>      <HeaderContent>my music</HeaderContent>    </HeaderWrapper>  )}
