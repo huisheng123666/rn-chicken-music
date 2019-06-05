@@ -27,6 +27,7 @@ export const changeSong = (song, index) => {
       createUrl(song.songmid).then(url => {
         song.musicurl = url
         console.log(url)
+        console.log(url)
         dispatch({
           type: constans.CHANGE_CURRENT_SONG,
           song: fromJS(song),

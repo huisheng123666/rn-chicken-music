@@ -55,7 +55,7 @@ class Player extends React.PureComponent {
   }
 
   togglePlayer () {
-    const {showPlayer, paused} = this.props
+    const {showPlayer, paused, currentSong} = this.props
     LayoutAnimation.configureNext({
       duration: 300,   //持续时间
       create: {
@@ -75,6 +75,9 @@ class Player extends React.PureComponent {
     setTimeout(() => {
       if (paused) return
       this.animated()
+      if (!currentSong.get('musicurl')) {
+        this.playNext()
+      }
     }, 100)
   }
 
@@ -97,9 +100,9 @@ class Player extends React.PureComponent {
 
   playNext () {
     this.state.rotateVal.setValue(0)
-    this.setState({
-      showVideo: false
-    })
+    // this.setState({
+    //   showVideo: false
+    // })
     const {currentIndex, currentList, changeSong} = this.props
     switch (this.state.currentType) {
       case 0:
@@ -118,19 +121,19 @@ class Player extends React.PureComponent {
       default:
         break
     }
-    this.cycleOne()
-    setTimeout(() => {
-      this.setState({
-        showVideo: true
-      })
-    }, 20)
+    // this.cycleOne()
+    // setTimeout(() => {
+    //   this.setState({
+    //     showVideo: true
+    //   })
+    // }, 20)
   }
 
   playPrev () {
     this.state.rotateVal.setValue(0)
-    this.setState({
-      showVideo: false
-    })
+    // this.setState({
+    //   showVideo: false
+    // })
     const {currentIndex, currentList, changeSong} = this.props
     switch (this.state.currentType) {
       case 0:
@@ -186,12 +189,16 @@ class Player extends React.PureComponent {
     })
   }
 
-  // componentDidMount () {
-  //   AppState.addEventListener('change', (nextAppState) => {
-  //     // this.animated(nextAppState)
-  //     this.animated(nextAppState)
-  //   });
-  // }
+  componentDidMount () {
+    // AppState.addEventListener('change', (nextAppState) => {
+    //   // this.animated(nextAppState)
+    //   this.animated(nextAppState)
+    // });
+    // const {currentSong} = this.props
+    // if (!currentSong.get('musicurl')) {
+    //   this.playNext()
+    // }
+  }
 
   onProgress (e) {
     let per = (e.currentTime / e.seekableDuration)
