@@ -1,20 +1,18 @@
-import React, {Fragment} from 'react'
-import { View } from 'react-native'
+import React from 'react'
 import { createMaterialTopTabNavigator } from 'react-navigation'
-import Home from '../home/home'
+// import Home from '../home/home'
 import Singer from '../singer/singer'
 import Rank from '../rank/rank'
 import Search from '../search/search'
-import Header from '../../components/header/header'
 import {utilWidth} from "../../common/js/util";
 
 const TabBarCom = createMaterialTopTabNavigator({
-  Home: {
-    screen: Home,
-    navigationOptions: {
-      tabBarLabel: "首页"
-    }
-  },
+  // Home: {
+  //   screen: Home,
+  //   navigationOptions: {
+  //     tabBarLabel: "首页"
+  //   }
+  // },
   Singer: {
     screen: Singer,
     navigationOptions: {

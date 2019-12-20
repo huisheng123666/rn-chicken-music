@@ -18,6 +18,7 @@ import cycleOneImg from './cycle-one.png'
 import randomImg from './random.png'
 import playImg from './play.png'
 import pausedImg from './paused.png'
+import {set} from "immutable";
 let timer = null
 
 class Player extends React.PureComponent {
@@ -28,12 +29,6 @@ class Player extends React.PureComponent {
       BackHandler.addEventListener('hardwareBackPress', this.onBackAndroid.bind(this));
       UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
     }
-
-    store.subscribe((state) => {
-      setTimeout(() => {
-        this.togglePlayer()
-      }, 10)
-    })
 
     this.state = {
       rotate: '0deg',
@@ -54,8 +49,15 @@ class Player extends React.PureComponent {
     this.onSlidingComplete = this.onSlidingComplete.bind(this)
   }
 
+  componentDidUpdate(prevProps) {
+    if (this.toTimer) {clearTimeout(this.toTimer)}
+    this.toTimer = setTimeout(() => {
+      this.togglePlayer()
+    }, 100)
+  }
+
   togglePlayer () {
-    const {showPlayer, paused, currentSong} = this.props
+    const {showPlayer, paused} = this.props
     LayoutAnimation.configureNext({
       duration: 300,   //持续时间
       create: {
@@ -70,20 +72,16 @@ class Player extends React.PureComponent {
     this.setState({
       width: showPlayer ? '100%' : 0,
       height: showPlayer ? '100%' : 0,
+    }, () => {
+      setTimeout(() => {
+        if (paused) return
+        this.animated()
+      }, 100)
     });
-
-    setTimeout(() => {
-      if (paused) return
-      this.animated()
-      if (!currentSong.get('musicurl')) {
-        this.playNext()
-      }
-    }, 100)
   }
 
   onBackAndroid () {
     this.props.changeStatus(false)
-    // this.props.changeStatus(false)
   }
 
   animated () {
@@ -100,17 +98,19 @@ class Player extends React.PureComponent {
 
   playNext () {
     this.state.rotateVal.setValue(0)
-    // this.setState({
-    //   showVideo: false
-    // })
     const {currentIndex, currentList, changeSong} = this.props
     switch (this.state.currentType) {
       case 0:
+        let song = null
+        let index = null
         if (currentIndex === currentList.size - 1) {
-          changeSong(currentList.get(0).toJS(), 0)
+          song = currentList.get(0).toJS()
+          index = 0
         } else {
-          changeSong(currentList.get(currentIndex + 1).toJS(), currentIndex + 1)
+          song = currentList.get(currentIndex + 1).toJS()
+          index = currentIndex + 1
         }
+        changeSong(song, index)
         break
       case 1:
         this.randomPlay()
@@ -121,27 +121,23 @@ class Player extends React.PureComponent {
       default:
         break
     }
-    // this.cycleOne()
-    // setTimeout(() => {
-    //   this.setState({
-    //     showVideo: true
-    //   })
-    // }, 20)
   }
 
   playPrev () {
     this.state.rotateVal.setValue(0)
-    // this.setState({
-    //   showVideo: false
-    // })
     const {currentIndex, currentList, changeSong} = this.props
     switch (this.state.currentType) {
       case 0:
+        let song = null
+        let index = null
         if (currentIndex === 0) {
-          changeSong(currentList.get(currentList.size - 1).toJS(), currentList.size - 1)
+          song = currentList.get(currentList.size - 1).toJS()
+          index = currentList.size - 1
         } else {
-          changeSong(currentList.get(currentIndex - 1).toJS(), currentIndex - 1)
+          song = currentList.get(currentIndex - 1).toJS()
+          index = currentIndex - 1
         }
+        changeSong(song, index)
         break
       case 1:
         this.randomPlay()
@@ -152,12 +148,6 @@ class Player extends React.PureComponent {
       default:
         break
     }
-    this.cycleOne()
-    setTimeout(() => {
-      this.setState({
-        showVideo: true
-      })
-    }, 20)
   }
 
   randomPlay () {
@@ -187,17 +177,6 @@ class Player extends React.PureComponent {
         currentType: type
       }
     })
-  }
-
-  componentDidMount () {
-    // AppState.addEventListener('change', (nextAppState) => {
-    //   // this.animated(nextAppState)
-    //   this.animated(nextAppState)
-    // });
-    // const {currentSong} = this.props
-    // if (!currentSong.get('musicurl')) {
-    //   this.playNext()
-    // }
   }
 
   onProgress (e) {
@@ -298,14 +277,15 @@ class Player extends React.PureComponent {
           </ControlButtonWrapper>
         </PlayControl>
 
-        {currentSong.get('musicurl') && this.state.showVideo ? <Video source={{uri: currentSong.get('musicurl')}}
-                                              ref="video"
-                                              paused={paused}
-                                              progressUpdateInterval={500}
-                                              playInBackground={true}
-                                              onProgress={this.onProgress}
-                                              onEnd={this.videoEnd}
-        /> : null}
+        {currentSong.get('musicurl') ?
+          <Video source={{uri: currentSong.get('musicurl')}}
+            ref="video"
+            paused={paused}
+            progressUpdateInterval={500}
+            playInBackground={true}
+            onProgress={this.onProgress}
+            onEnd={this.videoEnd} /> : null
+        }
         <Image style={styles.bgImg}
                blurRadius={2}
                source={{uri: currentSong.get('image') ? currentSong.get('image') : '123'}} />
